@@ -1,7 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+require('dotenv').config();
+const isUrlHttp = require('is-url-http')
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGO_URI)
@@ -30,18 +31,15 @@ app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+
 app.post('/api/shorturl', (req, res) => {
   const original_url = req.body.url
-  try {
-    const providedURL = new URL(req.body.url)
-    const validURL = providedURL.href
-    console.log("valid", validURL)
-  } catch {
-    console.log("Invalid URL")
+
+  if (isUrlHttp(original_url)) {
+    res.json({ original_url: original_url})
+  } else {
+    res.json({ error: "invalid url"})
   }
-  console.log("Original", original_url)
-  console.log("-----------------")
-  console.log()
   res.end()
 })
 
